@@ -8,5 +8,14 @@
       nuevo
       </b-button>
     </div>
+    <b-container class="bv-example-row">
+      <b-row class="text-center">
+        <b-col>Nombre</b-col>
+        <b-col>Imagen</b-col>
+        <b-col>Presio</b-col>
+        <b-col>Cantidad</b-col>
+        <b-col>Acciones</b-col>
+      </b-row>
+    </b-container>
   </div>
 </template>
