@@ -8,14 +8,76 @@
       nuevo
       </b-button>
     </div>
-    <b-container class="bv-example-row">
-      <b-row class="text-center">
-        <b-col>Nombre</b-col>
-        <b-col>Imagen</b-col>
-        <b-col>Presio</b-col>
-        <b-col>Cantidad</b-col>
-        <b-col>Acciones</b-col>
-      </b-row>
-    </b-container>
-  </div>
+    
+    <div class="row mt-2">
+     <!-- <div class="COL-MS-12">-->
+        <b-col cols="12" md="12" offset-md="10">
+        <b-table id="productos"  responsive striped hover :fields="fields" :items="productos" :current-page="currentPage" :per-page="perPage">
+        
+        <template slot="acciones">
+          <b-button variant="success">
+            Editar
+          </b-button>
+          <b-button variant="danger">
+            Eliminar
+          </b-button>
+        </template>
+        </b-table>
+
+          <b-pagination   
+            v-model="currentPage"
+             :total-rows="rows"
+              :per-page="perPage"
+               aria-controls="productos"
+    ></b-pagination>
+</b-col>
+
+      </div>
+    </div>
+    
+  <!--</div>-->
 </template>
+
+<script>
+import { db } from '../../services/firebase';
+export default {
+  asyncData(){
+
+   return db.collection("productos").get().then(productosSnap => {
+      let productos = []
+
+      productosSnap.forEach(value => {
+        productos.push(value.data());
+      });
+      return{
+        productos,
+        currentPage: 1,//donde inicia la paginacion
+        perPage: 4, //cuantos registros se va a mostrar
+
+
+      };
+
+    });
+  },
+  data(){
+
+    return{
+      fields: [ 'Imagen', 'nombre','precio', 'cantidad','acciones',{ isActive: true, age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },]
+    }
+    
+  },
+  computed: {
+      rows(){
+        return this.productos.length
+      }
+
+    },
+    methods: {
+      eliminarproducto(){
+        db.collection('producto').delete(id)
+
+      }
+    }
+
+};
+</script>
