@@ -1,10 +1,10 @@
 <template>
   <div class="row mt-3">
     <div class="col-sm-6">
-      <h2>Listado de productos</h2>
+      <h2>vehiculos</h2>
     </div>
     <div class="col-sm-6">
-      <b-button variant="primary" href="/productos/crear">
+      <b-button variant="primary" href="/categorias/crear">
       nuevo
       </b-button>
     </div>
@@ -12,14 +12,14 @@
     <div class="row mt-2">
      <!-- <div class="COL-MS-12">-->
         <b-col cols="12" md="12" offset-md="10">
-        <b-table id="productos"  responsive striped hover :fields="fields" :items="productos" :current-page="currentPage" :per-page="perPage">
+        <b-table id="categorias"  responsive striped hover :fields="fields" :items="categorias" :current-page="currentPage" :per-page="perPage">
         
         <template slot="acciones" slot-scope="data">
           
           <b-button variant="success">
             Editar
           </b-button>
-          <b-button variant="danger" type="buton" @click="eliminarproducto(data.item.id)"> <!--en este se combierte en boton-->
+          <b-button variant="danger" type="buton" @click="eliminarcategorias(data.item.id)"> <!--en este se combierte en boton-->
             Eliminar
           </b-button>
 
@@ -30,14 +30,13 @@
             v-model="currentPage"
              :total-rows="rows"
               :per-page="perPage"
-               aria-controls="productos"
+               aria-controls="categorias"
     ></b-pagination>
 </b-col>
 
       </div>
     </div>
     
-  <!--</div>-->
 </template>
 
 <script>
@@ -45,15 +44,15 @@ import { db } from '../../services/firebase';
 export default {
   asyncData(){
 
-   return db.collection("productos").get().then(productosSnap => {
-      let productos = []
+   return db.collection("categorias").get().then(categoriasSnap => {
+      let categorias = []
 
-      productosSnap.forEach(value => { //aqui se crea la coneccion para cerar el boton eliminar
-        productos.push({id:value.id,
+      categoriasSnap.forEach(value => { //aqui se crea la coneccion para cerar el boton eliminar
+        categorias.push({id:value.id,
         ...value.data()});
       });
       return{
-        productos,
+        categorias,
         currentPage: 1,//donde inicia la paginacion
         perPage: 4, //cuantos registros se va a mostrar
 
@@ -65,25 +64,25 @@ export default {
   data(){
 
     return{
-      fields: [ 'Imagen', 'nombre','precio', 'cantidad','acciones',{ isActive: true, age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },]
+      fields: ['nombre','acciones',{ isActive: true, age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },]
     }
     
   },
   computed: {
       rows(){
-        return this.productos.length
+        return this.categorias.length
       }
 
     },
     methods: {
-      eliminarproducto(id,index){ //aqui recibe el index-->
+      eliminarcategorias(id,index){ //aqui recibe el index-->
         
-        db.collection("productos").doc(id).delete().then(()=>{
+        db.collection("categorias").doc(id).delete().then(()=>{
           let index
-          this.productos.map((value,key)=>{
+          this.categorias.map((value,key)=>{
             if(value.id==id) index = key
           })
-          this.productos.splice(index,1)
+          this.categorias.splice(index,1)
         })//se llama a la coleccion productos y se borra
 
       }

@@ -6,9 +6,11 @@
         <b-col cols="12" md="4" offset-md="4">
           
             <div class="form-group">
-              <label for="url">Imagen</label>
-              <input type="text"  class="form-control" name="url" placeholder="Ingrese url">
-              <label for="Nombre">Nombre del producto</label>
+              
+              <b-form-group label="imagen: " label-for="imagen">
+                <b-form-file placeholder="cargar imagen" accept="imagen/*" v-model="imagenProduct" /> 
+              </b-form-group>
+              <label for="nombre">Nombre</label>
               <input
                 type="text"
                 required 
@@ -37,6 +39,10 @@
                 name="Cantidad"
                 placeholder="Ingrese cantidad"
               >
+              <b-form-group label="Categoria" label-for="categoria">
+
+              <b-form-select id="categoria" v-model="form.categoria" :options="categorias"></b-form-select>
+              </b-form-group>
             </div>
             <div class="row" id="galeria"></div>
         
@@ -55,9 +61,21 @@
 </template>
 
 <script>
-import { db } from '../../services/firebase'
+import { db, storage } from '../../services/firebase'
+import { async } from 'q';
 
 export default {
+  asyncData(){// hace consultas antes del dibujo
+    return db.collection('categorias').get().then(categoriasSnap => {
+      let categorias = [];
+      categoriasSnap.forEach(value => {
+        categorias.push(value.data().nombre);
+      })
+      return{
+        categorias
+      }
+    })
+  },
     data(){
         return {
             form:{
@@ -66,6 +84,7 @@ export default {
             precio: ''
             },
             guardando: false,
+            imagenProduct: "",
             t: false
         }
     },
@@ -75,11 +94,15 @@ export default {
           
           this.guardando= true
           this.t = true
-            db.collection("productos").add(this.form).then(res => {
+          let imagenRef = storage.child(this.imagenProduct.name)
+          imagenRef.put(this.imagenProduct).then(async imagenRes => { 
+           this.form.imagen = await imagenRes.ref.getDownloadURL()//se optiene la url de la imagen
+           db.collection("productos").add(this.form).then(res => {
                 this.$router.push({
                     path: "/productos"
                 })
             })
+          })//aqui se sube la imagen
         }
     }
 }
